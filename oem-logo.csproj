@@ -13,6 +13,8 @@
 
     <ItemGroup>
       <None Remove="Icons\ImageBrowser_48x.png" />
+      <None Remove="Icons\Tick_48x.png" />
+      <None Remove="Icons\Undo_48x.png" />
       <Resource Include="Icons\ImageBrowser_48x.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Resource>
@@ -20,6 +22,16 @@
       <Resource Include="Icons\HamburgerMenu_48x.png">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Resource>
+      <Resource Include="Icons\Tick_48x.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+      <Resource Include="Icons\Undo_48x.png">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Resource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="System.Drawing.Common" Version="6.0.0-preview.2.21154.6" />
     </ItemGroup>
 
 </Project>
