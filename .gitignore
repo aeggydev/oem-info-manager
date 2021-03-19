@@ -1,3 +1,5 @@
-﻿/.idea/
-/bin/
+﻿/bin/
+/.idea/
+/.vs/
 /obj/
+/oem-logo.sln.DotSettings*
