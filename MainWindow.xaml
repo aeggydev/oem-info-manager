@@ -1,77 +1,130 @@
-﻿<Window x:Class="oem_logo.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="400" ResizeMode="NoResize">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="8*" />
-            <RowDefinition Height="2*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        
-        <Button Panel.ZIndex="1" Width="15" Height="15"
-                Background="Transparent" BorderThickness="0"
-                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10, 5">
-            <Image Source="Icons/HamburgerMenu_48x.png" />
-        </Button>
-        <Button Grid.Row="0" Name="IconSelect" Background="Azure"
-                Height="290" Width="290" Margin="25, 25, 25, 0" Padding="35"
-                Click="IconSelect_OnClick"
-                ToolTip="Drag-and-drop an image file or click and select."
-                DragEnter="IconSelect_OnDragEnter" DragLeave="IconSelect_OnDragLeave"
-                DragOver="IconSelect_OnDragOver" Drop="IconSelect_OnDrop"
-                AllowDrop="True">
-            <Image Source="/Icons/ImageBrowser_48x.png" Width="32" Height="32" />
-        </Button>
-        <Grid Grid.Row="1" HorizontalAlignment="Stretch" Margin="30, 0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
-            <Label Grid.Column="0"
-                   HorizontalAlignment="Left" VerticalAlignment="Center"
-                   Name="Status">
-                No image selected
-            </Label>
-            <Button Grid.Column="1"
-                    IsEnabled="False" Name="IconSetButton"
-                    Click="IconSetButton_OnClick"
-                    HorizontalAlignment="Right" VerticalAlignment="Center"
-                    Padding="12, 3, 3, 0"
-                    HorizontalContentAlignment="Left" Width="70">
-                Set
+﻿<Window
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Class="oem_logo.MainWindow"
+    mc:Ignorable="d"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    Topmost="True"
+    Title="OEM Info Changer"
+    SizeToContent="Height" Width="400" ResizeMode="CanMinimize">
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Control"
+                    Key="S"
+                    Command="{Binding Path=WindowModel.SetCommand}" />
+    </Window.InputBindings>
+    <StackPanel Orientation="Vertical">
+        <StackPanel.Resources>
+            <Style x:Key="EditBoxes" TargetType="{x:Type ItemsControl}">
+                <Style.Resources>
+                    <Style TargetType="{x:Type Label}">
+                        <Setter Property="Height" Value="26" />
+                        <Setter Property="Margin" Value="0, 0, 20, 0" />
+                    </Style>
+                </Style.Resources>
+                <Setter Property="Margin" Value="10" />
+            </Style>
+        </StackPanel.Resources>
+
+        <Menu Margin="0, 0, 0, 5">
+            <MenuItem Header="Import" Click="Import_OnClick" />
+            <MenuItem Header="Export" Click="Export_OnClick" />
+        </Menu>
+        <TextBlock HorizontalAlignment="Center">Check that your image has a 1:1 aspect ratio.</TextBlock>
+        <TextBlock HorizontalAlignment="Center">For best results, provide a .bmp file.</TextBlock>
+        <!-- Drag and drop won't work in administrator mode -->
+        <Grid Margin="25, 5, 25, 0">
+            <Button Background="Azure"
+                    Height="290" Width="290" Padding="35"
+                    Click="IconSelect_OnClick"
+                    ToolTip="Click and select an image">
+                <Image Width="120" Height="120"
+                       Source="{Binding WindowModel.OemIcon.LocalValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             </Button>
+            <Button Panel.ZIndex="1"
+                    Width="24" Height="24" Margin="22, 0"
+                    HorizontalAlignment="Right" VerticalAlignment="Top"
+                    ToolTip="Undo image change"
+                    Command="{Binding UndoImageCommand}">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding WindowModel.OemIcon.Changed}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding WindowModel.OemIcon.Changed}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Image Source="/Icons/Undo_48x.png" />
+            </Button>
+            <Label Panel.ZIndex="1" HorizontalAlignment="Center" VerticalAlignment="Top">Click to change the image.</Label>
         </Grid>
 
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-            </Grid.RowDefinitions>
-            
-            <!-- TODO: Fix spacing and make it actually do stuff -->
-            <!-- TODO: Hide behind a button that extends the window -->
-            <Label Grid.Row="0">Manufacturer</Label>
-            <TextBox Grid.Column="1"></TextBox>
-            <Label Grid.Row="1" Padding="0,10,0,0">Model</Label>
-            <TextBox Grid.Row="1" Grid.Column="1"></TextBox>
-            <Label Grid.Row="2">Support Hours</Label>
-            <TextBox Grid.Row="2" Grid.Column="1"></TextBox>
-            <Label Grid.Row="3">Support Phone Number</Label>
-            <TextBox Grid.Row="3" Grid.Column="1"></TextBox>
-            <Label Grid.Row="4">Support URL</Label>
-            <TextBox Grid.Row="4" Grid.Column="1"></TextBox>
-        </Grid>
-    </Grid>
+        <Label Margin="30, 0"
+               HorizontalAlignment="Center" VerticalAlignment="Center"
+               Content="{Binding WindowModel.OemIcon.Filename}" />
+
+        <DockPanel Margin="10, 2, 10, 5" Width="Auto">
+            <Button VerticalAlignment="Center" DockPanel.Dock="Left" HorizontalAlignment="Left"
+                    HorizontalContentAlignment="Center" Width="100"
+                    Content="Open System Info" ToolTip="Opens the system info control panel"
+                    Command="{Binding OpenPanelCommand}" />
+            <Button DockPanel.Dock="Left" Margin="10, 0" Width="90"
+                    Command="{Binding OpenRegistryCommand}">
+                Open registry
+            </Button>
+            <Button VerticalAlignment="Center" DockPanel.Dock="Right" HorizontalAlignment="Right"
+                    HorizontalContentAlignment="Center" Width="75"
+                    Content="Set" ToolTip="Click to set the values in the registry"
+                    Command="{Binding WindowModel.SetCommand}" />
+            <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Width="20"
+                    ToolTip="Undo the changes in all fields"
+                    Command="{Binding WindowModel.UndoFieldsCommand}">
+                <Image Source="/Icons/Undo_48x.png" />
+            </Button>
+        </DockPanel>
+        <ItemsControl Style="{StaticResource EditBoxes}"
+                      ItemsSource="{Binding WindowModel.FieldPropList}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="3*" />
+                            <ColumnDefinition Width="7*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Label Grid.Column="0" Content="{Binding ValueName}" />
+                        <TextBox Grid.Column="1" VerticalContentAlignment="Center"
+                                 Text="{Binding LocalValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Setter Property="FontSize" Value="15" />
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                        <Image Grid.Column="1" Panel.ZIndex="0" Source="/Icons/Tick_48x.png" Stretch="Fill"
+                               ToolTip="Field doesn't differ from the value in the registry"
+                               Width="14" Height="16" HorizontalAlignment="Right" Margin="0, 0, 10, 0">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Changed}" Value="False">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Changed}" Value="True">
+                                            <Setter Property="Visibility" Value="Hidden" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
+                    </Grid>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
 </Window>
