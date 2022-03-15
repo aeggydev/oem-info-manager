@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -19,6 +20,8 @@ namespace oem_logo
     /// </summary>
     public partial class MainWindow : INotifyPropertyChanged
     {
+        private const string ProgramFilesPath = @"C:\Program Files\OEMChanger";
+
         private readonly JsonSerializerOptions _jsonSerializerOptions = new()
         {
             WriteIndented = true
@@ -101,8 +104,7 @@ namespace oem_logo
 
         private void HandleFile(FileInfo file)
         {
-            var programFilesPath = @"C:\Program Files\OEMChanger";
-            if (!Directory.Exists(programFilesPath)) Directory.CreateDirectory(programFilesPath);
+            if (!Directory.Exists(ProgramFilesPath)) Directory.CreateDirectory(ProgramFilesPath);
 
             var extension = file.Extension.ToLower();
 
@@ -116,25 +118,24 @@ namespace oem_logo
 
             var inputFile = file.FullName;
 
-            string UniquePath(int i = 0)
-            {
-                var path = Path.Combine(programFilesPath, $"logo{i}.bmp");
-                if (File.Exists(path))
-                {
-                    return UniquePath(i + 1);
-                }
-
-                return path;
-            }
-
             var outputFile = UniquePath();
-            //if (File.Exists(outputFile)) File.Delete(outputFile);
 
             var bitmap = new Bitmap(inputFile);
             bitmap = new Bitmap(bitmap, new Size(120, 120));
             bitmap.Save(outputFile, ImageFormat.Bmp);
 
             WindowModel.OemIcon.LocalValue = outputFile;
+        }
+
+        private string UniquePath(int i = 0)
+        {
+            var path = Path.Combine(ProgramFilesPath, $"logo{i}.bmp");
+            if (File.Exists(path))
+            {
+                return UniquePath(i + 1);
+            }
+
+            return path;
         }
 
         private void Import_OnClick(object sender, RoutedEventArgs e)
@@ -166,9 +167,12 @@ namespace oem_logo
                 return;
             }
 
+            var imageBytes = Convert.FromBase64String(data?.OemIconImage);
+            var logoPath = UniquePath();
+            File.WriteAllBytes(logoPath, imageBytes);
             WindowModel.Manufacturer.LocalValue = data?.Manufacturer;
             WindowModel.Model.LocalValue = data?.Model;
-            WindowModel.OemIcon.LocalValue = data?.OemIconPath;
+            WindowModel.OemIcon.LocalValue = logoPath;
             WindowModel.SupportHours.LocalValue = data?.SupportHours;
             WindowModel.SupportPhone.LocalValue = data?.SupportPhone;
             WindowModel.SupportUrl.LocalValue = data?.SupportUrl;
@@ -193,9 +197,17 @@ namespace oem_logo
 
         private void SaveSettingsFile(string outPath)
         {
+            var iconpath = @"C:\Program Files\OEMChanger\" + WindowModel.OemIcon.Filename;
+            if (!File.Exists(iconpath))
+            {
+                throw new FileNotFoundException("OEM icon could not be located");
+            }
+
+            var imageBytes = File.ReadAllBytes(iconpath);
+            var imageBase64 = Convert.ToBase64String(imageBytes);
             var data = new SettingsObject
             {
-                OemIconPath = WindowModel.OemIcon.LocalValue,
+                OemIconImage = imageBase64,
                 Manufacturer = WindowModel.Manufacturer.LocalValue,
                 Model = WindowModel.Model.LocalValue,
                 SupportHours = WindowModel.SupportHours.LocalValue,

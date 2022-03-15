@@ -10,12 +10,12 @@ namespace oem_logo
     // Used for import / export
     public record SettingsObject
     {
-        public string OemIconPath { get; init; }
         public string Manufacturer { get; init; }
         public string Model { get; init; }
         public string SupportHours { get; init; }
         public string SupportPhone { get; init; }
         public string SupportUrl { get; init; }
+        public string OemIconImage { get; init; }
     }
 
     public class SystemSettingsModel
