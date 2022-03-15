@@ -30,6 +30,8 @@
         <Menu Margin="0, 0, 0, 5">
             <MenuItem Header="Import" Click="Import_OnClick" />
             <MenuItem Header="Export" Click="Export_OnClick" />
+            <MenuItem Header="Clear all" Click="ClearAll_OnClick"></MenuItem>
+            <MenuItem Header="Clear icon" Click="ClearIcon_OnClick"></MenuItem>
         </Menu>
         <TextBlock HorizontalAlignment="Center">Check that your image has a 1:1 aspect ratio.</TextBlock>
         <TextBlock HorizontalAlignment="Center">For best results, provide a .bmp file.</TextBlock>

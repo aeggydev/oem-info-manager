@@ -218,4 +218,22 @@ public partial class MainWindow : INotifyPropertyChanged
 
         File.WriteAllText(outPath, json);
     }
+
+    private void ClearIcon_OnClick(object sender, RoutedEventArgs e)
+    {
+        WindowModel.OemIcon.LocalValue = "";
+    }
+
+    private void ClearAll_OnClick(object sender, RoutedEventArgs e)
+    {
+        var props = new[]
+        {
+            WindowModel.Manufacturer, WindowModel.Model, WindowModel.OemIcon, WindowModel.SupportHours,
+            WindowModel.SupportPhone, WindowModel.SupportUrl
+        };
+        foreach (var prop in props)
+        {
+            prop.LocalValue = "";
+        }
+    }
 }
