@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using Microsoft.Win32;
-using oem_logo.Annotations;
 
 namespace oem_logo
 {
@@ -143,7 +142,6 @@ namespace oem_logo
                 SystemValue = LocalValue;
             }
 
-            [NotifyPropertyChangedInvocator]
             private void OnPropertyChanged([CallerMemberName] string propertyName = null)
             {
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
