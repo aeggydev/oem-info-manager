@@ -115,8 +115,20 @@ namespace oem_logo
             }
 
             var inputFile = file.FullName;
-            var outputFile = Path.Combine(programFilesPath, "logo.bmp");
-            if (File.Exists(outputFile)) File.Delete(outputFile);
+
+            string UniquePath(int i = 0)
+            {
+                var path = Path.Combine(programFilesPath, $"logo{i}.bmp");
+                if (File.Exists(path))
+                {
+                    return UniquePath(i + 1);
+                }
+
+                return path;
+            }
+
+            var outputFile = UniquePath();
+            //if (File.Exists(outputFile)) File.Delete(outputFile);
 
             var bitmap = new Bitmap(inputFile);
             bitmap = new Bitmap(bitmap, new Size(120, 120));
